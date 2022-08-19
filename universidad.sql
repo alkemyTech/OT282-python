@@ -1,4 +1,3 @@
-
 -- Script que muestra dos tablas que contienen datos pedidos.
 
 -- Datos esperados:
