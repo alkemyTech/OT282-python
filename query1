@@ -1,0 +1,23 @@
+select m.universidad as university,
+m.carrerra as career,
+to_date(m.fechaiscripccion, 'DD/MM/YYYY') as inscription_date,
+m.nombrre as firs_last_name,
+m.sexo as gender,
+age(current_date, to_date(m.nacimiento, 'DD/MM/YYYY')) as _age,
+m.codgoposstal as postal_code,
+m.eemail as email
+from moron_nacional_pampa m
+where to_date(m.fechaiscripccion, 'DD/MM/YYYY') between '2020-09-01' and '2021-02-01'and universidad='Universidad de morón';
+
+
+select univiersities as univiersity, 
+carrera as career,
+to_date(inscription_dates, 'YY/Mon/DD') as inscription_date,
+names as firs_last_name,
+sexo as gender,
+age(current_date, to_date(fechas_nacimiento,'YY/Mon/DD')) as _age,
+localidad as location,
+email
+from rio_cuarto_interamericana 
+where to_date(inscription_dates,'YY/Mon/DD') between '2020-09-01' and '2021-02-01' and univiersities='Universidad-nacional-de-río-cuarto';
+
