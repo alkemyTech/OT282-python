@@ -5,8 +5,10 @@ from db_conn_csv_creation import create_csv_from_sql
 from airflow.operators.python_operator import PythonOperator
 from airflow.models import Variable
 
+
 # Variable creation. The variables were created in airflow. DATABLASE_URL should be encrypted as it handles
 # sensitive information. For practical reasons the variables are included in the code as 'default_var'
+
 
 DATABASE_URL = Variable.get(
     "DATABASE_URL",
@@ -22,7 +24,6 @@ DELSALVADOR_QUERY = Variable.get(
 DELSALVADOR_CSV = Variable.get(
     "DELSALVADOR_CSV", default_var="dags/files/delsalvador.csv"
 )
-
 
 with DAG(
     dag_id="comahue_delsalvador_dag",
@@ -40,7 +41,7 @@ with DAG(
             "sql_query_path": COMAHUE_QUERY,
             "output_csv_path": COMAHUE_CSV,
         },
-        retires=5,
+        retries=5,
     )  # This PythonOperator connects to the db, that runs comahue_sql query and stores the data in comahue.csv in the files folder
     task_b = PythonOperator(
         task_id="creates_delsalvador_csv",

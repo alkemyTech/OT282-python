@@ -1,5 +1,6 @@
 from sqlalchemy import create_engine, text
 import csv
+from logging_config import logger
 
 
 def create_csv_from_sql(database_url, sql_query_path, output_csv_path):
