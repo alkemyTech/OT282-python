@@ -1,0 +1,28 @@
+SELECT  universidad, 
+		carrerra as carrera, 
+	    to_date(fechaiscripccion, 'DD-MM-YYYY') as fecha_inscripcion, 
+		nombrre as nombre_apellido, 
+		sexo, 
+		AGE(CURRENT_DATE, to_date(nacimiento, 'DD-MM-YYYY')) as edad,
+		codgoposstal as cod_postal, 
+		eemail as email
+FROM moron_nacional_pampa
+WHERE to_date(fechaiscripccion, 'DD-MM-YYYY') 
+		BETWEEN '2020-09-01' AND '2021-02-01'
+	AND universidad = 'Universidad nacional de la pampa'
+ORDER BY to_date(fechaiscripccion, 'DD-MM-YYYY') ASC;
+
+
+SELECT  univiersities as universidad, 
+		carrera, 
+	    to_date(inscription_dates, 'YY-Mon-DD') as fecha_inscripcion, 
+		names as nombre_apellido, 
+		sexo, 
+		AGE(CURRENT_DATE, to_date(fechas_nacimiento, 'YY-Mon-DD')) as edad,
+		localidad, 
+		email
+FROM rio_cuarto_interamericana
+WHERE to_date(inscription_dates, 'YY-Mon-DD') 
+		BETWEEN '2020-09-01' AND '2021-02-01'
+	AND univiersities = '-universidad-abierta-interamericana'
+ORDER BY to_date(inscription_dates, 'YY-Mon-DD') ASC;
