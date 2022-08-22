@@ -40,6 +40,7 @@ with DAG(
             "sql_query_path": COMAHUE_QUERY,
             "output_csv_path": COMAHUE_CSV,
         },
+        retires=5,
     )  # This PythonOperator connects to the db, that runs comahue_sql query and stores the data in comahue.csv in the files folder
     task_b = PythonOperator(
         task_id="creates_delsalvador_csv",
@@ -49,6 +50,7 @@ with DAG(
             "sql_query_path": DELSALVADOR_QUERY,
             "output_csv_path": DELSALVADOR_CSV,
         },
+        retries=5,
     )  # This PythonOperator connects to the db, that runs delsalvador_sql query and stores the data in dalsalvador.csv in the files folder
     task_c = DummyOperator(
         task_id="task_b"
