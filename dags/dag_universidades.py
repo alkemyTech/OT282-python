@@ -3,11 +3,21 @@ Este dag nos va a permitir extraer datos de universidades, poderlas
 transformar con pandas y luego cargar los datos listos en un bucket de s3
 '''
 from datetime import datetime, timedelta
+import logging
 from airflow import DAG
 #Este operator voy a utilizar para realizar las tareas de ETL
 from airflow.operators.python_operator import PythonOperator
 from config import default_args
 from uni_etl import extract, transform, load_s3
+
+#Configuración basica de logs para el dag y las tasks
+logging.basicConfig(
+    format= '%(asctime)s - %(name)s - %(message)s',
+    level= logging.INFO,
+    datefmt='%Y-%m-%d'
+)
+#Logger listo para logear eventos
+logger = logging.getLogger('Dag-Universidades')
 
 with DAG(
     'universidades',
