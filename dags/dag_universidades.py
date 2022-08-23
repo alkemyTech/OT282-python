@@ -20,7 +20,7 @@ logging.basicConfig(
 logger = logging.getLogger('Dag-Universidades')
 
 with DAG(
-    'universidades',
+    'etl-uni-alkemy',
     default_args=default_args,
     description='DAG para hacer un ETL de Universidades',
     schedule_interval=timedelta(hours=1),
