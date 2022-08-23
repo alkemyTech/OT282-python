@@ -1,3 +1,4 @@
+
 SELECT  universidad, 
 		carrerra as carrera, 
 	    to_date(fechaiscripccion, 'DD-MM-YYYY') as fecha_inscripcion, 
