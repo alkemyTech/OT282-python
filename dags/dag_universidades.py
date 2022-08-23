@@ -38,7 +38,7 @@ with DAG(
         dag=dag
     )
 
-    #Segunda task del dag transforma datos con pandas
+    #Segunda task del dag transforma datos con pandas - Procesa los datos obtenidos
     transforma = PythonOperator(
         task_id='Transforma',
         python_callable=transform,

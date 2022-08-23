@@ -46,15 +46,15 @@ def extract() -> None:
             logger.info('Universidad %s completada exitosamente', i)
 
 
-def transform():
+def transform() -> None:
     '''
     En esta función levantamos en pandas el archivo extraido anteriormente
-    y lo procesamos, limpiamos y sacamos los insigth que nos pidieron, y lo 
+    y lo procesamos, limpiamos y sacamos los insigth que nos pidieron, y lo
     dejamos listo para cargarlo en un s3 de AWS.
     '''
     #logger listo para logguear eventos
     logger = logging.getLogger('Task-Transform')
-    logger.info('Transform')
+    logger.info('Funcion Transform que procesa datos obtenidos')
 
 def load_s3():
     '''
