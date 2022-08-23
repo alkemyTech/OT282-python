@@ -29,6 +29,8 @@ with DAG(
     tags=['ETL'],
 ) as dag:
 
+    logger.info('Inciando las tareas')
+
     #Primera task del dag extrae los datos
     extrae = PythonOperator(
         task_id='Extrae',

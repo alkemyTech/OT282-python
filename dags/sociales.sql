@@ -1,4 +1,4 @@
--- Script que muestra dos tablas que contienen datos pedidos.
+-- Script que muestra la tabla que contiene datos pedidos.
 
 -- Datos esperados:
 -- university
@@ -26,16 +26,3 @@ select
 	l.emails as email	
 from lat_sociales_cine l
 where to_date(l.inscription_dates, 'DD-MM-YYYY') between '2020-09-01' and '2021-02-01';
-
--- Universidad J. F. Kennedy
-select
-	uk.universidades as university,
-	uk.carreras as career,
-	to_date(uk.fechas_de_inscripcion, 'YY-Mon-DD') as inscription_date,
-	uk.nombres as first_last_name,
-	uk.sexo as gender,
-	age(current_date, to_date(uk.fechas_nacimiento, 'YY-Mon-DD')) as _age,
-	uk.codigos_postales as postal_code,
-	uk.emails as email	
-from public.uba_kenedy uk
-where to_date(uk.fechas_de_inscripcion, 'YY-Mon-DD') between '2020-09-01' and '2021-02-01';
