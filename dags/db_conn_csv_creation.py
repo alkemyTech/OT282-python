@@ -30,3 +30,13 @@ def create_csv_from_sql(database_url, sql_query_path, output_csv_path):
         outcsv.writerow(x for x in cursor.keys())
         # dump rows
         outcsv.writerows(cursor.fetchall())
+
+
+def run_university_list(database_url, university_list):
+    university_list = university_list.split(",")
+    for university in university_list:
+        sql_path = f"dags/sql/{university}.sql"
+        csv_path = f"dags/files/{university}.csv"
+        create_csv_from_sql(
+            database_url=database_url, sql_query_path=sql_path, output_csv_path=csv_path
+        )

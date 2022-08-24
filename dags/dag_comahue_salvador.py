@@ -1,7 +1,7 @@
 from airflow.models import DAG
 from airflow.utils.dates import days_ago
 from airflow.operators.dummy_operator import DummyOperator
-from db_conn_csv_creation import create_csv_from_sql
+from db_conn_csv_creation import run_university_list
 from airflow.operators.python_operator import PythonOperator
 from airflow.models import Variable
 
@@ -14,16 +14,10 @@ DATABASE_URL = Variable.get(
     "DATABASE_URL",
     default_var="postgresql://alkymer2:Alkemy23@training-main.cghe7e6sfljt.us-east-1.rds.amazonaws.com:5432/training",
 )
-COMAHUE_QUERY = Variable.get(
-    "COMAHUE_QUERY", default_var="dags/sql/comahue_university.sql"
+UNIVERSITY_LIST = Variable.get(
+    "UNIVERSITY_LIST", default_var="comahue_university,delsalvador_university"
 )
-COMAHUE_CSV = Variable.get("COMAHUE_CSV", default_var="dags/files/comahue.csv")
-DELSALVADOR_QUERY = Variable.get(
-    "DELSALVADOR_QUERY", default_var="dags/sql/delsalvador_university.sql"
-)
-DELSALVADOR_CSV = Variable.get(
-    "DELSALVADOR_CSV", default_var="dags/files/delsalvador.csv"
-)
+
 
 with DAG(
     dag_id="comahue_delsalvador_dag",
@@ -34,31 +28,19 @@ with DAG(
 ) as dag:
 
     task_a = PythonOperator(
-        task_id="creates_comahue_csv",
-        python_callable=create_csv_from_sql,
+        task_id="creates_universities_csv",
+        python_callable=run_university_list,
         op_kwargs={
             "database_url": DATABASE_URL,
-            "sql_query_path": COMAHUE_QUERY,
-            "output_csv_path": COMAHUE_CSV,
+            "university_list": UNIVERSITY_LIST,
         },
         retries=5,
     )  # This PythonOperator connects to the db, that runs comahue_sql query and stores the data in comahue.csv in the files folder
-    task_b = PythonOperator(
-        task_id="creates_delsalvador_csv",
-        python_callable=create_csv_from_sql,
-        op_kwargs={
-            "database_url": DATABASE_URL,
-            "sql_query_path": DELSALVADOR_QUERY,
-            "output_csv_path": DELSALVADOR_CSV,
-        },
-        retries=5,
-    )  # This PythonOperator connects to the db, that runs delsalvador_sql query and stores the data in dalsalvador.csv in the files folder
-    task_c = DummyOperator(
+    task_b = DummyOperator(
         task_id="task_b"
     )  # This dummyop will be a python operator that process the data using pandas
-    task_d = DummyOperator(
+    task_c = DummyOperator(
         task_id="task_c"
     )  # This dummyop will be a python operator that uploads the files to S3
 
-    task_a >> task_c >> task_d
-    task_b >> task_c
+    task_a >> task_b >> task_c
