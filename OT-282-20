@@ -1,0 +1,27 @@
+select  universities,careers, to_date(inscription_dates,'DD-MM-YYYY'),
+        names,sexo,age(current_date,to_date(birth_dates,'DD/MM/YYYY')),
+        locations,emails
+from   lat_sociales_cine
+where   universities ='UNIVERSIDAD-DEL-CINE'
+        and to_date(inscription_dates,'DD-MM-YYYY') between '01-09-2020' and '01-02-2021'
+        ;             
+        
+
+select  universidades,carreras, to_date(fechas_de_inscripcion,'YY-Mon-DD'),
+        nombres,sexo,age(current_date,to_date(fechas_nacimiento,'YY-Mon-DD')),
+        codigos_postales,emails
+from    uba_kenedy
+where   universidades ='universidad-de-buenos-aires'
+        and to_date(fechas_de_inscripcion,'YY-Mon-DD') between '01-09-2020' and '01-02-2021'
+        ;                    
+
+    
+
+
+
+
+
+
+
+
+
