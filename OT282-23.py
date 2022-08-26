@@ -30,6 +30,10 @@ def extract():
             universidad.to_csv(name)
     except:
         logging.error('Error de conexión')
+
+#Task 2
+def normalize():
+    pass
         
 # Definición de DAG
 with DAG(
@@ -51,8 +55,9 @@ with DAG(
         task_id = 'query_universidad_c',
         python_callable=extract
         )
-    t2 = DummyOperator(
-        task_id = 'carga_de_datos'
+    t2 = PythonOperator(
+        task_id = 'normalize_data',
+        python_callable=normalize
     )
     
     t1.doc_md = dedent(
