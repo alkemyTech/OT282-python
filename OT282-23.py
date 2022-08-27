@@ -6,6 +6,7 @@ from airflow.operators.dummy import DummyOperator
 from sqlalchemy import create_engine
 import pandas as pd
 import logging
+from decouple import config
 
 logging.basicConfig(filename='app.log',
                     format='%(asctime)s - %(levelname)s - %(message)s',
@@ -20,7 +21,12 @@ def extract():
         querys = {'jujuy': 'OT282-15-tabla jujuy.sql',
                   'palermo': 'OT282-15-tabla palermo.sql'
                   }
-        engine = create_engine('postgresql+psycopg2://alkymer2:Alkemy23@training-main.cghe7e6sfljt.us-east-1.rds.amazonaws.com:5432/training')
+        user_name = config('USER_NAME')
+        password = config('PASSWORD')
+        host = config('HOST')
+        server_ = config('PORT')
+        database = config('DB_NAME')
+        engine = create_engine(f'postgresql+psycopg2://{user_name}:{password}@{host}:{server_}/{database}')
 
         for keys,values in querys.items():
             with open (values, encoding='utf-8') as query:
