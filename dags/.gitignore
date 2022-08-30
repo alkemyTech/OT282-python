@@ -1,3 +1,7 @@
 __pycache__/
 .env
 files/
+aux_files/
+cosas-a-hacer.md
+pruebas.ipynb
+codigos_postales.csv

@@ -21,7 +21,7 @@ select
 	to_date(uk.fechas_de_inscripcion, 'YY-Mon-DD') as inscription_date,
 	uk.nombres as first_last_name,
 	uk.sexo as gender,
-	age(current_date, to_date(uk.fechas_nacimiento, 'YY-Mon-DD')) as _age,
+	date_part ('year',age(current_date, to_date(uk.fechas_nacimiento, 'YY-Mon-DD'))) as _age,
 	uk.codigos_postales as postal_code,
 	uk.emails as email	
 from public.uba_kenedy uk

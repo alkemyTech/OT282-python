@@ -18,13 +18,12 @@ logging.basicConfig(
 )
 #Logger listo para logear eventos
 logger = logging.getLogger('Dag-Universidades')
-
 with DAG(
-    'etl-uni-alkemy',
+    'etl-ot282-g',
     default_args=default_args,
     description='DAG para hacer un ETL de Universidades',
     schedule_interval=timedelta(hours=1),
-    start_date=datetime(2022, 8, 19),
+    start_date=datetime(2022, 8, 29),
     catchup=False,
     tags=['ETL'],
 ) as dag:
@@ -38,19 +37,46 @@ with DAG(
         dag=dag
     )
 
-    #Segunda task del dag transforma datos con pandas - Procesa los datos obtenidos
-    transforma = PythonOperator(
-        task_id='Transforma',
+    #Segunda tasks del dag transforma datos con pandas - Procesa los datos obtenidos
+    #Task Kennedy
+    transforma_kennedy = PythonOperator(
+        task_id='Transforma-Kennedy',
         python_callable=transform,
+        op_args=['kennedy'],
+        dag=dag
+    )
+    #Task Sociales
+    transforma_sociales = PythonOperator(
+        task_id='Transforma-Sociales',
+        python_callable=transform,
+        op_args=['sociales'],
         dag=dag
     )
 
     #Tercera task del dag carga la info lista en un S3 de AWS
-    carga = PythonOperator(
-        task_id='carga_en_S3',
+    #Carga kennedy
+    carga_kennedy = PythonOperator(
+        task_id='carga_en_S3_kennedy',
         python_callable=load_s3,
+        op_kwargs={
+        'filename': './files/kennedy.txt',
+        'key': 'kennedy.txt',
+        'bucket_name': 'cohorte-agosto-38d749a7',
+        'facultad': 'kennedy'
+        },
         dag=dag
     )
-
+    #Carga Sociales
+    carga_sociales = PythonOperator(
+        task_id='carga_en_S3_sociales',
+        python_callable=load_s3,
+        op_kwargs={
+        'filename': './files/sociales.txt',
+        'key': 'sociales.txt',
+        'bucket_name': 'cohorte-agosto-38d749a7',
+        'facultad': 'sociales'
+        },
+        dag=dag
+    )
     #Flujo de tasks
-    extrae >> transforma >> carga
+    extrae >> transforma_kennedy >> transforma_sociales >> carga_kennedy >> carga_sociales
