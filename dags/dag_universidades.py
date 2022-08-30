@@ -18,13 +18,12 @@ logging.basicConfig(
 )
 #Logger listo para logear eventos
 logger = logging.getLogger('Dag-Universidades')
-
 with DAG(
-    'etl-uni-alkemy',
+    'etl-ot282-g',
     default_args=default_args,
     description='DAG para hacer un ETL de Universidades',
     schedule_interval=timedelta(hours=1),
-    start_date=datetime(2022, 8, 19),
+    start_date=datetime(2022, 8, 29),
     catchup=False,
     tags=['ETL'],
 ) as dag:
@@ -38,10 +37,19 @@ with DAG(
         dag=dag
     )
 
-    #Segunda task del dag transforma datos con pandas - Procesa los datos obtenidos
-    transforma = PythonOperator(
-        task_id='Transforma',
+    #Segunda tasks del dag transforma datos con pandas - Procesa los datos obtenidos
+    #Task Kennedy
+    transforma_kennedy = PythonOperator(
+        task_id='Transforma-Kennedy',
         python_callable=transform,
+        op_args=['kennedy'],
+        dag=dag
+    )
+    #Task Sociales
+    transforma_sociales = PythonOperator(
+        task_id='Transforma-Sociales',
+        python_callable=transform,
+        op_args=['sociales'],
         dag=dag
     )
 
@@ -53,4 +61,4 @@ with DAG(
     )
 
     #Flujo de tasks
-    extrae >> transforma >> carga
+    extrae >> transforma_kennedy >> transforma_sociales >> carga

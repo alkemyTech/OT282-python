@@ -21,7 +21,7 @@ select
 	to_date(l.inscription_dates, 'DD-MM-YYYY') as inscription_date,
 	l.names as first_last_name,
 	l.sexo as gender,
-	age(current_date, to_date(l.birth_dates, 'DD-MM-YYYY')) as _age,
+	date_part ('year',age(current_date, to_date(l.birth_dates, 'DD-MM-YYYY'))) as _age,
 	l.locations as _location,
 	l.emails as email	
 from lat_sociales_cine l
