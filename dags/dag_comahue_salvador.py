@@ -2,6 +2,7 @@ from airflow.models import DAG
 from airflow.utils.dates import days_ago
 from airflow.operators.dummy_operator import DummyOperator
 from db_conn_csv_creation import run_university_list
+from process_files import process_files
 from airflow.operators.python_operator import PythonOperator
 from airflow.models import Variable
 
@@ -17,6 +18,8 @@ DATABASE_URL = Variable.get(
 UNIVERSITY_LIST = Variable.get(
     "UNIVERSITY_LIST", default_var="comahue_university,delsalvador_university"
 )
+INPUT_PATH = Variable.get("INPUT_PATH", default_var="dags/files/")
+OUTPUT_PATH = Variable.get("OUTPUT_PATH", default_var="dags/files/output/")
 
 
 with DAG(
@@ -36,9 +39,15 @@ with DAG(
         },
         retries=5,
     )  # This PythonOperator connects to the db, that runs comahue_sql query and stores the data in comahue.csv in the files folder
-    task_b = DummyOperator(
-        task_id="task_b"
-    )  # This dummyop will be a python operator that process the data using pandas
+    task_b = PythonOperator(
+        task_id="process_university_files",
+        python_callable=process_files,
+        op_kwargs={
+            "input_path": INPUT_PATH,
+            "output_path": OUTPUT_PATH,
+        },
+    )
+    # This dummyop will be a python operator that process the data using pandas
     task_c = DummyOperator(
         task_id="task_c"
     )  # This dummyop will be a python operator that uploads the files to S3
