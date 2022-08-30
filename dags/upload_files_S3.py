@@ -2,6 +2,10 @@ import logging
 import boto3
 from botocore.exceptions import ClientError
 import os
+from airflow.models import Variable
+
+AWS_ACCESS_KEY = Variable.get("AWS_ACCESS_KEY")
+AWS_SECRET_KEY = Variable.get("AWS_SECRET_KEY")
 
 
 def upload_file(file_name, bucket, object_name=None):
@@ -20,8 +24,8 @@ def upload_file(file_name, bucket, object_name=None):
     # Upload the file
     s3_client = boto3.client(
         "s3",
-        aws_access_key_id=ACCESS_KEY,
-        aws_secret_access_key=SECRET_KEY,
+        aws_access_key_id=AWS_ACCESS_KEY,
+        aws_secret_access_key=AWS_SECRET_KEY,
     )
 
     try:
@@ -32,16 +36,8 @@ def upload_file(file_name, bucket, object_name=None):
     return True
 
 
-# if __name__ == "__main__":
-#     # a = upload_file(
-#     #     file_name="dags/files/output/comahue.txt", bucket="cohorte-agosto-38d749a7"
-#     # )
-#     # print(a)
-
-#     # Then use the session to get the resource
-#     s3 = boto3.resource("s3")
-
-#     my_bucket = s3.Bucket("cohorte-agosto-38d749a7")
-
-#     for file in my_bucket.objects.all():
-#         print(file.key)
+# # The following code was used to check if the files were in the S3 bucket
+# s3 = boto3.resource("s3")
+# my_bucket = s3.Bucket("cohorte-agosto-38d749a7")
+# for file in my_bucket.objects.all():
+#     print(file.key)

@@ -6,12 +6,14 @@ URL_GOOGLE_EXPORT = "https://drive.google.com/uc?export=download&id="
 
 # This function converts given date to age
 def age(born):
+    """Transforms a given date of birth into age"""
     born = datetime.strptime(born, "%Y-%m-%d").date()
     today = date.today()
     return today.year - born.year - ((today.month, today.day) < (born.month, born.day))
 
 
 def process_files(input_path, output_path):
+    """Process both universities at the same time in order to be included in a PythonOperator"""
 
     process_comahue(
         comahue_input_path=input_path + "comahue_university.csv",
@@ -213,6 +215,7 @@ def process_delsalvador(delsalvador_input_path, delsalvador_output_path):
 
     delsalvador["age"] = delsalvador["edad"].apply(age)
 
+    # The lambda function performs 100 plus the negative ages that were obtained in the transformation in order to obtain valid ages.
     delsalvador["age"] = delsalvador["age"].apply(lambda x: (100 + x) if x < 0 else x)
     delsalvador["age"] = delsalvador["age"].astype(int)
 
