@@ -6,6 +6,7 @@ from pathlib import Path
 import pandas as pd
 import numpy as np
 from sqlalchemy import create_engine
+from airflow.hooks.S3_hook import S3Hook
 from config import HOST_DB, USER_DB, PASSWORD_DB, DB, facultades
 
 #Funiones adicionales
@@ -97,10 +98,12 @@ def transform(facultad) -> None:
         df_merge_s = pd.merge(df_sociales, df_zip, how= 'left', on= 'location')
         normalizar(df_merge_s, facultad)
         logger.info('Transform y creacion del archivo .txt hechos exitosamente!!!')
-def load_s3():
+def load_s3(filename: str, key: str, bucket_name: str, facultad: str) -> None:
     '''
-    En esta función se sube el archivo a un s3 de AWS.
+    En esta función se sube los archivos a un s3 de AWS.
     '''
     #logger listo para logguear eventos
     logger = logging.getLogger('Task-Load')
-    logger.info('Load a un S3 de AWS')
+    hook = S3Hook('s3_conn')
+    hook.load_file(filename=filename, key=key, bucket_name=bucket_name)
+    logger.info('Archivo %s subido exitosamente', facultad)

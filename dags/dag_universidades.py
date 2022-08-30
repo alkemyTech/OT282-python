@@ -54,11 +54,29 @@ with DAG(
     )
 
     #Tercera task del dag carga la info lista en un S3 de AWS
-    carga = PythonOperator(
-        task_id='carga_en_S3',
+    #Carga kennedy
+    carga_kennedy = PythonOperator(
+        task_id='carga_en_S3_kennedy',
         python_callable=load_s3,
+        op_kwargs={
+        'filename': './files/kennedy.txt',
+        'key': 'kennedy.txt',
+        'bucket_name': 'cohorte-agosto-38d749a7',
+        'facultad': 'kennedy'
+        },
         dag=dag
     )
-
+    #Carga Sociales
+    carga_sociales = PythonOperator(
+        task_id='carga_en_S3_sociales',
+        python_callable=load_s3,
+        op_kwargs={
+        'filename': './files/sociales.txt',
+        'key': 'sociales.txt',
+        'bucket_name': 'cohorte-agosto-38d749a7',
+        'facultad': 'sociales'
+        },
+        dag=dag
+    )
     #Flujo de tasks
-    extrae >> transforma_kennedy >> transforma_sociales >> carga
+    extrae >> transforma_kennedy >> transforma_sociales >> carga_kennedy >> carga_sociales
