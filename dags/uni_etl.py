@@ -48,6 +48,9 @@ def normalizar(df_facu: pd.DataFrame, facultad: str) -> None:
     #quitar guiones
     df_facu[['university', 'career', 'first_last_name', 'email', 'location', 'postal_code']] = \
         df_facu[['university', 'career', 'first_last_name', 'email', 'location', 'postal_code']].apply(lambda x: x.str.replace('-', ' '))
+    #quitar prefijos y sufijos a la columna first_last_name
+    df_facu['first_last_name'] = df_facu['first_last_name'].str.replace('mr.', '').replace('mrs.', '').replace('ms.', '')\
+        .replace('jr.', '').replace('jrs.', '').replace('dr.', '').replace('drs.', '').replace('phd.', '').replace('dds.', '')
     df_facu.to_csv(Path('files', facultad + '.txt'), index=False)
 #Función Primera Task -> Extraer
 def extract() -> None:
