@@ -67,7 +67,7 @@ def transform():
         tabla_palermo['last_name'] = tabla_palermo['first_name'].str.split(' ').str.get(1)
         tabla_palermo['first_name'] = tabla_palermo['first_name'].str.split(' ').str.get(0)
 
-        #Normalizo columna 'age'
+        #Normalizo columna 'age' 
         tabla_jujuy['age'] = tabla_jujuy['age'].str.split(' ').str.get(0)
         tabla_palermo['age'] = tabla_palermo['age'].str.split(' ').str.get(0)
         tabla_jujuy = tabla_jujuy.astype({'age': 'float32'})

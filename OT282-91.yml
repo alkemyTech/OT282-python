@@ -1,0 +1,63 @@
+augusto:
+  default_args: 
+    owner: 'Augusto-Monza'
+    start_date: 2022-01-01
+    retries: 5
+    depends_on_past: False
+    retry_delay_sec: 300
+  concurrency: 1
+  max_active_runs: 1
+  dagrun_timeout_sec: 600
+  orientation: "LR"
+  default_view: 'tree'
+  schedule_interval: '@daily'
+  
+  description: 'Hacer un ETL para 2 universidades distintas'
+  tasks:
+    task_1:
+      operator: airflow.operators.python_operator.PythonOperator
+      python_callable_name: extract
+      python_callable_file: /home/augusto/airflow/dags/functions.py
+      provide_context: True
+    task_2:
+      operator: airflow.operators.python_operator.PythonOperator
+      python_callable_name: transform
+      python_callable_file: /home/augusto/airflow/dags/functions.py
+      provide_context: True
+      dependencies: [task_1]
+    task_3:
+      operator: airflow.operators.python_operator.PythonOperator
+      python_callable_name: transform
+      python_callable_file: /home/augusto/airflow/dags/functions.py
+      provide_context: True
+      dependencies: [task_2]
+    task_4:
+      operator: airflow.operators.python_operator.PythonOperator
+      python_callable_name: load_s3
+      provide_context: True
+      op_kwargs: {
+        'filename': 'kennedy.txt',
+        'key': 'kennedy.txt',
+        'bucket_name': 'cohorte-agosto-38d749a7',
+        'facultad': 'kennedy'
+        }
+      python_callable_file: /home/augusto/airflow/dags/functions.py
+      dependencies: [task_3]
+    task_5:
+      operator: airflow.operators.python_operator.PythonOperator
+      python_callable_name: load_s3
+      provide_context: True
+      op_kwargs: {
+        'filename': 'sociales.txt',
+        'key': 'sociales.txt',
+        'bucket_name': 'cohorte-agosto-38d749a7',
+        'facultad': 'sociales'
+        }
+      python_callable_file: /home/augusto/airflow/dags/functions.py
+      dependencies: [task_4]
+      
+
+
+
+
+
