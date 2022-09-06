@@ -1,0 +1,45 @@
+agustina_calvo_dynamic_dag:
+  default_args:
+    owner: "Agustina Calvo"
+    start_date: 2 days
+  description: "this dag process Agustina Calvo universities dags"
+  schedule_interval: "0 * * * *"
+  default_view: "tree"
+  orientation: "LR"
+  tasks:
+    task_a:
+      task_id: "creates_universities_csv"
+      retries: 5
+      operator: airflow.operators.python_operator.PythonOperator
+      python_callable_name: run_university_list
+      python_callable_file: "/opt/airflow/dags/db_conn_csv_creation.py"
+      op_kwargs:
+        database_url: "postgresql://alkymer2:Alkemy23@training-main.cghe7e6sfljt.us-east-1.rds.amazonaws.com:5432/training"
+        university_list: "comahue_university,delsalvador_university"
+    task_b:
+      task_id: "process_university_files"
+      operator: airflow.operators.python_operator.PythonOperator
+      python_callable_name: process_files
+      python_callable_file: "/opt/airflow/dags/process_files.py"
+      op_kwargs:
+        input_path: "/opt/airflow/dags/files/"
+        output_path: "/opt/airflow/dags/files/output/"
+      dependencies: [task_a]
+    task_c:
+      task_id: "upload_comehue_to_S3"
+      operator: airflow.operators.python_operator.PythonOperator
+      python_callable_name: upload_file
+      python_callable_file: "/opt/airflow/dags/upload_files_S3.py"
+      op_kwargs:
+        file_name: "/opt/airflow/dags/files/output/comahue.txt"
+        bucket: "cohorte-agosto-38d749a7"
+      dependencies: [task_b]
+    task_d:
+      task_id: "upload_delsalvador_to_S3"
+      operator: airflow.operators.python_operator.PythonOperator
+      python_callable_name: upload_file
+      python_callable_file: "/opt/airflow/dags/upload_files_S3.py"
+      op_kwargs:
+        file_name: "/opt/airflow/dags/files/output/delsalvador.txt"
+        bucket: "cohorte-agosto-38d749a7"
+      dependencies: [task_b]
