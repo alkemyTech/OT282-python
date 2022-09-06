@@ -1,0 +1,24 @@
+dinamic-dag:
+  default_args:
+    owner: 'Juan'
+    start_date: 2022-09-03
+    end_date: 2018-01-05
+    retries: 5
+    retry_delay_sec: 300
+  schedule_interval: '0 * * * *'
+  concurrency: 1
+  max_active_runs: 1
+  dagrun_timeout_sec: 60
+  default_view: 'tree'
+  orientation: 'LR'
+  description: 'Tarea dag-dinamico'
+tasks:
+    Extrae:
+      operator: airflow.operators.python_operator.PythonOperator
+      python_callable_name: extract
+      python_callable_file: /home/juanjure/airflow/docker/dags/DAG_Augusto.py
+    
+    Transforma:
+      operator: airflow.operators.python_operator.PythonOperator
+      python_callable_name: transform
+      python_callable_file: /home/juanjure/airflow/docker/dags/DAG_Augusto.py
