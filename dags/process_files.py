@@ -12,6 +12,18 @@ def age(born):
     return today.year - born.year - ((today.month, today.day) < (born.month, born.day))
 
 
+def change_gender(df, column):
+    """Modifies the format the gender column"""
+    df[column] = df[column].str.strip().str.replace("M", "male").str.replace("F", "female").str.lower()
+    return df
+
+
+def modify_column_comahue(df, column):
+    """Modifies the format of some columns in comahue dataframe"""
+    df[column] = df[column].str.strip().str.lower().str.replace("-", "").str.replace("_", "")
+    return df
+
+
 def process_files(input_path, output_path):
     """Process both universities at the same time in order to be included in a PythonOperator"""
 
@@ -67,13 +79,9 @@ def process_comahue(comahue_input_path, comahue_output_path):
         .str.lower()
     )
 
-    comahue[["first_name", "last_name"]] = comahue["full_name"].str.split(
-        " ", expand=True
-    )
+    comahue[["first_name", "last_name"]] = comahue["full_name"].str.split(" ", expand=True)
     comahue["age"] = comahue["edad"].apply(age)
-    comahue["inscription_date"] = pd.to_datetime(
-        comahue["inscription_date"], format="%Y-%m-%d"
-    )
+    comahue["inscription_date"] = pd.to_datetime(comahue["inscription_date"], format="%Y-%m-%d")
     comahue["inscription_date"] = comahue["inscription_date"].astype(str)
     comahue["age"] = comahue["age"].astype(int)
 
@@ -81,41 +89,17 @@ def process_comahue(comahue_input_path, comahue_output_path):
         comahue, location, left_on="postal_code", right_on="codigo_postal", how="left"
     ).reset_index()
     comahue_loc = comahue_loc.rename(columns={"localidad": "location"})
-    comahue_loc["university"] = (
-        comahue_loc["university"]
-        .str.strip()
-        .str.lower()
-        .str.replace("-", "")
-        .str.replace("_", "")
-    )
-    comahue_loc["career"] = (
-        comahue_loc["career"]
-        .str.strip()
-        .str.lower()
-        .str.replace("-", "")
-        .str.replace("_", "")
-    )
-    comahue_loc["location"] = (
-        comahue_loc["location"]
-        .str.strip()
-        .str.lower()
-        .str.replace("-", "")
-        .str.replace("_", "")
-    )
-    comahue_loc["email"] = (
-        comahue_loc["email"]
-        .str.strip()
-        .str.lower()
-        .str.replace("-", "")
-        .str.replace("_", "")
-    )
-    comahue_loc["gender"] = (
-        comahue_loc["gender"]
-        .str.strip()
-        .str.replace("M", "male")
-        .str.replace("F", "female")
-        .str.lower()
-    )
+
+    comahue_loc = modify_column_comahue(comahue_loc, "university")
+
+    comahue_loc = modify_column_comahue(comahue_loc, "career")
+
+    comahue_loc = modify_column_comahue(comahue_loc, "location")
+
+    comahue_loc = modify_column_comahue(comahue_loc, "email")
+
+    comahue_loc = change_gender(comahue_loc, "gender")
+
     comahue_loc["postal_code"] = comahue_loc["postal_code"].astype(str)
 
     comahue_final = comahue_loc[
@@ -161,24 +145,16 @@ def process_delsalvador(delsalvador_input_path, delsalvador_output_path):
 
     # DEL SALVADOR PROCESSING
 
-    delsalvador["university"] = (
-        delsalvador["university"].str.replace("_", " ").str.lower().str.strip()
-    )
-    delsalvador["career"] = (
-        delsalvador["career"].str.replace("_", " ").str.lower().str.strip()
-    )
-    delsalvador["full_name"] = (
-        delsalvador["full_name"].str.replace("_", " ").str.strip()
-    )
+    delsalvador["university"] = delsalvador["university"].str.replace("_", " ").str.lower().str.strip()
+    delsalvador["career"] = delsalvador["career"].str.replace("_", " ").str.lower().str.strip()
+
     delsalvador["location"] = delsalvador["location"].str.replace("_", " ").str.strip()
+
     delsalvador["email"] = delsalvador["email"].str.lower().str.strip()
-    delsalvador["gender"] = (
-        delsalvador["gender"]
-        .str.strip()
-        .str.replace("M", "male")
-        .str.replace("F", "female")
-        .str.lower()
-    )
+
+    delsalvador = change_gender(delsalvador, "gender")
+
+    delsalvador["full_name"] = delsalvador["full_name"].str.replace("_", " ").str.strip()
 
     delsalvador["full_name"] = (
         delsalvador["full_name"]
@@ -196,18 +172,12 @@ def process_delsalvador(delsalvador_input_path, delsalvador_output_path):
         .str.lower()
     )
 
-    delsalvador[["first_name", "last_name"]] = delsalvador["full_name"].str.split(
-        " ", expand=True
-    )
+    delsalvador[["first_name", "last_name"]] = delsalvador["full_name"].str.split(" ", expand=True)
 
-    delsalvador["inscription_date"] = pd.to_datetime(
-        delsalvador["inscription_date"], format="%d-%b-%y"
-    )
+    delsalvador["inscription_date"] = pd.to_datetime(delsalvador["inscription_date"], format="%d-%b-%y")
     delsalvador["edad"] = pd.to_datetime(delsalvador["edad"], format="%d-%b-%y")
 
-    delsalvador["inscription_date"] = delsalvador["inscription_date"].dt.strftime(
-        "%Y-%m-%d"
-    )
+    delsalvador["inscription_date"] = delsalvador["inscription_date"].dt.strftime("%Y-%m-%d")
     delsalvador["inscription_date"] = delsalvador["inscription_date"].astype(str)
 
     delsalvador["edad"] = delsalvador["edad"].dt.strftime("%Y-%m-%d")
