@@ -2,6 +2,8 @@ from airflow.models import DAG
 from airflow.utils.dates import days_ago
 from airflow.operators.dummy_operator import DummyOperator
 from db_conn_csv_creation import run_university_list
+from process_files import process_files
+from upload_files_S3 import upload_file
 from airflow.operators.python_operator import PythonOperator
 from airflow.models import Variable
 
@@ -17,6 +19,9 @@ DATABASE_URL = Variable.get(
 UNIVERSITY_LIST = Variable.get(
     "UNIVERSITY_LIST", default_var="comahue_university,delsalvador_university"
 )
+INPUT_PATH = Variable.get("INPUT_PATH", default_var="dags/files/")
+OUTPUT_PATH = Variable.get("OUTPUT_PATH", default_var="dags/files/output/")
+AWS_S3_BUCKET = Variable.get("AWS_S3_BUCKET")
 
 
 with DAG(
@@ -36,11 +41,33 @@ with DAG(
         },
         retries=5,
     )  # This PythonOperator connects to the db, that runs comahue_sql query and stores the data in comahue.csv in the files folder
-    task_b = DummyOperator(
-        task_id="task_b"
-    )  # This dummyop will be a python operator that process the data using pandas
-    task_c = DummyOperator(
-        task_id="task_c"
-    )  # This dummyop will be a python operator that uploads the files to S3
+    task_b = PythonOperator(
+        task_id="process_university_files",
+        python_callable=process_files,
+        op_kwargs={
+            "input_path": INPUT_PATH,
+            "output_path": OUTPUT_PATH,
+        },
+    )
+    # This python operator process the data using pandas
+    task_c = PythonOperator(
+        task_id="upload_comehue_to_S3",
+        python_callable=upload_file,
+        op_kwargs={
+            "file_name": OUTPUT_PATH + "comahue.txt",
+            "bucket": AWS_S3_BUCKET,
+        },
+    )
+    # This python operator uploads the comahue.txt file to the S3 bucket
+    task_d = PythonOperator(
+        task_id="upload_delsalvador_to_S3",
+        python_callable=upload_file,
+        op_kwargs={
+            "file_name": OUTPUT_PATH + "delsalvador.txt",
+            "bucket": AWS_S3_BUCKET,
+        },
+    )
+    # This python operator uploads the delsalvador.txt file to the S3 bucket
 
     task_a >> task_b >> task_c
+    task_b >> task_d
