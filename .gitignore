@@ -5,6 +5,7 @@ __pycache__/
 .vscode
 .DS_Store
 *.txt
+*.xml
 
 
 *.csv
