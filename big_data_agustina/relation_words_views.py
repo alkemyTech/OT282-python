@@ -40,8 +40,13 @@ def reducer(list1, list2):
     Adds two elements of two lists
     """
     list_sum = [0, 0]
-    list_sum[0] = list1[0] + list2[0]
-    list_sum[1] = list1[1] + list2[1]
+    if list1 is None or list1 == []:
+        return list2
+    if list2 is None or list2 == []:
+        return list1
+    if list1 and list2:
+        list_sum[0] = list1[0] + list2[0]
+        list_sum[1] = list1[1] + list2[1]
 
     return list_sum
 
